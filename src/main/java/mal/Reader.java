@@ -70,6 +70,11 @@ public class Reader {
                 break;
             case ')':
                 System.out.print("unexpected ')'");
+            case '[':
+                form = readVector(new MalVector(), '[', ']');
+                break;
+            case ']':
+                System.out.print("unexpected ']'");
             default:
                 form = readAtom();
         }
@@ -78,6 +83,20 @@ public class Reader {
 
     static MalType readList(MalList malList, char start, char end) {
         MalList list = new MalList();
+        String token = next();
+        if (token.charAt(0) != start) {
+            throw new NullPointerException("expected '" + start + "'");
+        }
+        while ((token = peek()) != null && token.charAt(0) != end) {
+            list.malTypeList.add(readForm());
+        }
+
+        next();
+        return list;
+    }
+
+    static MalType readVector(MalVector malList, char start, char end) {
+        MalVector list = new MalVector();
         String token = next();
         if (token.charAt(0) != start) {
             throw new NullPointerException("expected '" + start + "'");

@@ -1,12 +1,13 @@
 package mal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Types {
     interface ILambda {
 
-         MalType apply(MalList args);
+         MalType apply(MalList args) throws Exception;
 
     }
     interface MalType {
@@ -36,6 +37,39 @@ public class Types {
         }
         public MalList slice(Integer start) {
             return slice(start, malTypeList.size());
+        }
+    }
+    static class MalVector implements MalType{
+        List<MalType> malTypeList;
+
+        public MalVector(List<MalType> malTypeList) {
+            this.malTypeList = malTypeList;
+        }
+        public MalVector(MalType... malTypes) {
+            this.malTypeList = new ArrayList<>();
+            for (MalType mal:malTypes) {
+                malTypeList.add(mal);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return malTypeList + " => {MalVector}";
+        }
+    }
+    static class MalHashMap implements MalType{
+        HashMap<MalType,MalType> map;
+
+        public MalHashMap() {
+            map = new HashMap<>();
+        }
+
+        void put(MalType key,MalType value){
+            map.put(key,value);
+        }
+
+        MalType get(MalType key){
+            return map.get(key);
         }
     }
     static class MalInt implements MalType{

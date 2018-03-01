@@ -19,24 +19,74 @@ public class Step3_env {
     static MalFunc plus = a -> new Types.MalInt(((Types.MalInt) a.malTypeList.get(0)).value - ((Types.MalInt) a.malTypeList.get(1)).value);
 
 
-
     static MalType READ(String exp) {
         return readStr(exp);
     }
 
     static MalType EVAL(MalType exp, Env.Environment env) throws Exception {
-        MalType malType;
+        MalType malType = null;
         if (exp instanceof Types.MalList) {
             List tempList = ((Types.MalList) exp).malTypeList;
-            Types.MalSymbol func = (Types.MalSymbol) tempList.get(0);
-            Types.ILambda f = (Types.ILambda) (env.get(func));
-            MalType tempList1 = new Types.MalList(tempList.subList(1, tempList.size()));
-            malType = evalAst(tempList1, env);
-            switch (func.value){
-                case "def!":env.set();break;
-                case "let*":env;break;
+            MalType symbol = (MalType) tempList.get(0);
+            String a0sym = symbol instanceof Types.MalSymbol ? ((Types.MalSymbol)symbol).value
+                    : "lambda";
+            switch (a0sym) {
+                case "do":
+                    MalType malDo = null;
+                    for (int i = 1; i < tempList.size(); i++) {
+                        malDo = EVAL((MalType) tempList.get(i), env);
+                    }
+                    return malDo;
+                case "if":
+                    MalType valEnable = (MalType) tempList.get(1);
+                    Types.MalConstant enable = (Types.MalConstant) EVAL(valEnable, env);
+                    if(enable.constant.equals("true")){
+                        MalType valTrue = (MalType) tempList.get(2);
+                        return EVAL(valTrue, env);
+                    }else{
+                        MalType valFalse = (MalType) tempList.get(3);
+                        if(valFalse == null){
+                            return new Types.MalConstant("nil");
+                        }else{
+                            return EVAL(valFalse, env);
+                        }
+                    }
+                case "lambda":
+                    Types.MalList valBinds = (Types.MalList) tempList.get(0);
+                    MalType valExprs = (MalType) tempList.get(1);
+                    return new MalFunc() {
+                        @Override
+                        public MalType apply(Types.MalList a) throws Exception {
+                            return EVAL(valExprs, new Env.Environment(env, valBinds, a));
+                        }
+                    };
+                case "def!":
+                    Types.MalSymbol variable = (Types.MalSymbol) tempList.get(1);
+                    MalType val = (MalType) tempList.get(2);
+                    MalType malVal = EVAL(val, env);
+                    env.set(variable, malVal);
+                    return malVal;
+                case "let*":
+                    MalType envVariable = (MalType) tempList.get(1);
+                    MalType envTempVal = (MalType) tempList.get(2);
+                    Env.Environment newEnv = new Env.Environment(env);
+                    for (int i = 0; i < ((Types.MalList)envVariable).malTypeList.size() ; i = i + 2) {
+                        Types.MalSymbol envVariable1 = (Types.MalSymbol) ((Types.MalList)envVariable).malTypeList.get(i);
+                        MalType envTempVal1 = ((Types.MalList)envVariable).malTypeList.get(i + 1);
+                        if(((Types.MalList)envVariable).malTypeList.get(i + 1) instanceof Types.MalList){
+                            Types.MalList temp = (Types.MalList)envTempVal1 ;
+                            envTempVal1 = EVAL(temp, newEnv);
+                        }
+                        newEnv.set(envVariable1, envTempVal1);
+                    }
+                    return EVAL(envTempVal,newEnv);
+                default:
+                    Types.ILambda f = (Types.ILambda) (env.get((Types.MalSymbol) symbol));
+                    MalType tempList2 = new Types.MalList(tempList.subList(1, tempList.size()));
+                    MalType malFuncVal = evalAst(tempList2, env);
+                    malType = f.apply((Types.MalList) malFuncVal);
             }
-            return f.apply((Types.MalList) malType);
+            return malType;
         } else if (exp == null) {
             return exp;
         } else {
@@ -94,6 +144,6 @@ public class Step3_env {
 
     @FunctionalInterface
     interface MalFunc extends MalType, Types.ILambda {
-        MalType apply(Types.MalList a);
+        MalType apply(Types.MalList a) throws Exception;
     }
 }
