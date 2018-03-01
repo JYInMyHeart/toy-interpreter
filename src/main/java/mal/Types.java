@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Types {
-    public static interface ILambda {
+    interface ILambda {
 
-        public MalType apply(MalList args);
-
-    }
-    abstract static class MalType {
+         MalType apply(MalList args);
 
     }
-    static class MalList extends MalType{
+    interface MalType {
+
+    }
+    static class MalList implements MalType{
         List<MalType> malTypeList;
 
         public MalList(MalType... malTypes) {
@@ -28,24 +28,17 @@ public class Types {
 
         @Override
         public String toString() {
-            return "MalList{" +
-                    "malTypeList=" + malTypeList +
-                    '}';
+            return malTypeList + " => {MalList}";
         }
 
         public MalList slice(Integer start, Integer end) {
-
             return new MalList(malTypeList.subList(start, end));
-
         }
-
         public MalList slice(Integer start) {
-
             return slice(start, malTypeList.size());
-
         }
     }
-    static class MalInt extends MalType{
+    static class MalInt implements MalType{
         int value;
 
         public MalInt(int value) {
@@ -54,12 +47,10 @@ public class Types {
 
         @Override
         public String toString() {
-            return "MalInt{" +
-                    "value=" + value +
-                    '}';
+            return value + " => {MalInt}";
         }
     }
-    static class MalSymbol extends MalType{
+    static class MalSymbol implements MalType{
         String value;
 
         public MalSymbol(String value) {
@@ -68,13 +59,11 @@ public class Types {
 
         @Override
         public String toString() {
-            return "MalSymbol{" +
-                    "value='" + value + '\'' +
-                    '}';
+            return value + " => {MalSymbol}";
         }
     }
 
-    static class MalConstant extends MalType{
+    static class MalConstant implements MalType{
         String constant;
 
         public MalConstant(String constant) {
@@ -83,9 +72,7 @@ public class Types {
 
         @Override
         public String toString() {
-            return "MalConstant{" +
-                    "constant='" + constant + '\'' +
-                    '}';
+            return constant + " => {MalConstant}";
         }
     }
 

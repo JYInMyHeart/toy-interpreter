@@ -12,6 +12,11 @@ public class Env {
             this.parent = parent;
         }
 
+        public Environment(Environment parent, Map<String, Types.MalType> data) {
+            this.parent = parent;
+            this.data = data;
+        }
+
         public Environment(Environment parent, Types.MalList binds, Types.MalList exprs) {
             this.parent = parent;
             for (int i = 0; i < binds.malTypeList.size(); i++) {
@@ -26,20 +31,20 @@ public class Env {
         }
 
 
-        Environment find(Types.MalSymbol sym){
-            if(data.containsKey(sym)){
+        Environment find(Types.MalSymbol sym) throws Exception {
+            if(data.containsKey(sym.value)){
                 return this;
             }else if(parent != null){
                 return parent.find(sym);
             }else {
-                return null;
+                throw new Exception("undefined");
             }
         }
 
-        Types.MalType get(Types.MalSymbol symbol){
+        Types.MalType get(Types.MalSymbol symbol) throws Exception {
             Environment env = find(symbol);
             if(env != null){
-                return env.data.get(symbol);
+                return env.data.get(symbol.value);
             }else{
                 return null;
             }
