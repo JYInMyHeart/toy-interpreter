@@ -1,3 +1,5 @@
+package mal;
+
 import java.util.Scanner;
 
 /**
