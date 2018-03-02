@@ -6,15 +6,21 @@ import java.util.List;
 
 public class Types {
     interface ILambda {
-
          MalType apply(MalList args) throws Exception;
-
     }
     interface MalType {
 
     }
     static class MalList implements MalType{
         List<MalType> malTypeList;
+
+        public int size(){
+            return malTypeList.size();
+        }
+
+        public MalType nth(Integer idx) {
+            return (MalType)malTypeList.get(idx);
+        }
 
         public MalList(MalType... malTypes) {
             this.malTypeList = new ArrayList<>();
@@ -107,6 +113,24 @@ public class Types {
         @Override
         public String toString() {
             return constant + " => {MalConstant}";
+        }
+    }
+
+    @FunctionalInterface
+    interface MalFunc extends MalType, ILambda {
+        MalType apply(MalList a) throws Exception;
+    }
+
+    static class MalBoolean implements MalType{
+        boolean value;
+
+        public MalBoolean(boolean value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return Boolean.toString(value);
         }
     }
 

@@ -3,7 +3,7 @@ package mal;
 import java.util.*;
 
 import static mal.Reader.readStr;
-import static mal.Types.MalType;
+import static mal.Types.*;
 
 /**
  * @author xck
@@ -33,10 +33,7 @@ public class Step2_eval {
         PRINT(EVAL(READ(exp),env));
 
     }
-    @FunctionalInterface
-    interface MalFunc extends MalType , Types.ILambda {
-        MalType apply(Types.MalList a);
-    }
+
     static MalFunc add = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value + ((Types.MalInt)a.malTypeList.get(1)).value);
     static MalFunc mul = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value * ((Types.MalInt)a.malTypeList.get(1)).value);
     static MalFunc div = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value / ((Types.MalInt)a.malTypeList.get(1)).value);

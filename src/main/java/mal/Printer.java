@@ -15,6 +15,8 @@ public class Printer {
         System.out.println(malType);
     }
 
+
+
     public static void println(String msg){
         System.out.println(msg);
     }
