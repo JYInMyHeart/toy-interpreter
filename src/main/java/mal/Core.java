@@ -8,13 +8,15 @@ import java.util.Map;
 
 public class Core {
     public static Map ns = new HashMap();
-    private static MalFunc add = a -> new MalInt(((MalInt) a.nth(0)).value + ((MalInt) a.nth(1)).value);
-    private static MalFunc mul = a -> new MalInt(((MalInt) a.nth(0)).value * ((MalInt) a.nth(1)).value);
-    private static MalFunc div = a -> new MalInt(((MalInt) a.nth(0)).value / ((MalInt) a.nth(1)).value);
-    private static MalFunc plus = a -> new MalInt(((MalInt) a.nth(0)).value - ((MalInt) a.nth(1)).value);
-    private static MalFunc isList = a -> new MalBoolean(a instanceof MalList) ;
-    private static MalFunc gt = a -> new MalBoolean(((MalInt) a.nth(0)).value > ((MalInt) a.nth(1)).value);
-    private static MalFunc lt = a -> new MalBoolean(((MalInt) a.nth(0)).value < ((MalInt) a.nth(1)).value);
+    private static MalFunc add = a -> ((MalInt) a.nth(0)).add ((MalInt) a.nth(1));
+    private static MalFunc mul = a -> ((MalInt) a.nth(0)).mul ((MalInt) a.nth(1));
+    private static MalFunc div = a -> ((MalInt) a.nth(0)).div ((MalInt) a.nth(1));
+    private static MalFunc plus = a -> ((MalInt) a.nth(0)).plus ((MalInt) a.nth(1));
+    private static MalFunc isList = a -> new MalBoolean(a.list_Q()) ;
+    private static MalFunc gt = a -> (((MalInt) a.nth(0)).gt((MalInt) a.nth(1)));
+    private static MalFunc lt = a -> (((MalInt) a.nth(0)).lt((MalInt) a.nth(1)));
+    private static MalFunc gte = a -> (((MalInt) a.nth(0)).gte((MalInt) a.nth(1)));
+    private static MalFunc lte = a -> (((MalInt) a.nth(0)).lte((MalInt) a.nth(1)));
     private static MalFunc eq = a -> {
         if(a != null && a.nth(0) instanceof MalList){
             MalList l1 = (MalList) a.nth(0);
@@ -37,6 +39,15 @@ public class Core {
         }
     };
     private static MalFunc empty = a -> new MalBoolean(a.size() == 0);
+    private static MalFunc count = a -> {
+        if(a != null && a.nth(0) instanceof MalList){
+            MalList l1 = (MalList) a.nth(0);
+            return new MalInt(l1.size());
+        }else{
+            return new MalInt(0);
+        }
+    };
+    private static MalFunc list = a -> (MalList)a;
 
 
     static {
@@ -47,8 +58,12 @@ public class Core {
         ns.put("list?", isList);
         ns.put(">", gt);
         ns.put("<", lt);
+        ns.put(">=", gte);
+        ns.put("<=", lte);
         ns.put("=", eq);
         ns.put("empty?", empty);
+        ns.put("count", count);
+        ns.put("list", list);
     }
 
 }

@@ -14,12 +14,13 @@ public class Types {
     static class MalList implements MalType{
         List<MalType> malTypeList;
 
+        public Boolean list_Q() { return true; }
         public int size(){
             return malTypeList.size();
         }
 
         public MalType nth(Integer idx) {
-            return (MalType)malTypeList.get(idx);
+            return malTypeList.get(idx);
         }
 
         public MalList(MalType... malTypes) {
@@ -45,8 +46,8 @@ public class Types {
             return slice(start, malTypeList.size());
         }
     }
-    static class MalVector implements MalType{
-        List<MalType> malTypeList;
+    static class MalVector extends MalList{
+        public Boolean list_Q() { return false; }
 
         public MalVector(List<MalType> malTypeList) {
             this.malTypeList = malTypeList;
@@ -61,6 +62,12 @@ public class Types {
         @Override
         public String toString() {
             return malTypeList + " => {MalVector}";
+        }
+        public MalList slice(Integer start, Integer end) {
+            return new MalVector(malTypeList.subList(start, end));
+        }
+        public MalList slice(Integer start) {
+            return slice(start, malTypeList.size());
         }
     }
     static class MalHashMap implements MalType{
@@ -83,6 +90,31 @@ public class Types {
 
         public MalInt(int value) {
             this.value = value;
+        }
+
+        public MalInt add(MalInt malInt){
+            return new MalInt(value + malInt.value);
+        }
+        public MalInt mul(MalInt malInt){
+            return new MalInt(value * malInt.value);
+        }
+        public MalInt div(MalInt malInt){
+            return new MalInt(value / malInt.value);
+        }
+        public MalInt plus(MalInt malInt){
+            return new MalInt(value - malInt.value);
+        }
+        public MalBoolean lt(MalInt malInt){
+            return new MalBoolean(value < malInt.value);
+        }
+        public MalBoolean gt(MalInt malInt){
+            return new MalBoolean(value > malInt.value);
+        }
+        public MalBoolean lte(MalInt malInt){
+            return new MalBoolean(value <= malInt.value);
+        }
+        public MalBoolean gte(MalInt malInt){
+            return new MalBoolean(value >= malInt.value);
         }
 
         @Override

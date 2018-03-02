@@ -97,10 +97,11 @@ public class Step3_env {
 
     static MalType evalAst(MalType malType, Env.Environment environment) throws Exception {
         if (malType instanceof MalList) {
-            MalList vals = new MalList();
+            MalList vals = ((MalList) malType).list_Q() ? new MalList() : new MalVector();
             MalList exprs = (MalList) malType;
-            for (int i = 0; i < exprs.malTypeList.size(); i++) {
-                vals.malTypeList.add(EVAL(exprs.malTypeList.get(i), environment));
+
+            for (int i = 0; i < exprs.size(); i++) {
+                vals.malTypeList.add(EVAL(exprs.nth(i), environment));
             }
             return vals;
         } else if (malType instanceof MalSymbol) {
