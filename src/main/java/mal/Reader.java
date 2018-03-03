@@ -125,6 +125,8 @@ public class Reader {
             return new MalConstant("true");
         } else if (matcher.group(5) != null) {
             return new MalConstant("false");
+        } else if (matcher.group(6) != null) {
+            return new MalString(matcher.group(6));
         } else if (matcher.group(8) != null) {
             return new MalSymbol(matcher.group(8));
         } else {

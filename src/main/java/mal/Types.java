@@ -1,8 +1,6 @@
 package mal;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Types {
     interface ILambda {
@@ -84,6 +82,15 @@ public class Types {
         MalType get(MalType key){
             return map.get(key);
         }
+
+        Set<Map.Entry<MalType, MalType>> entrySet(){
+            return map.entrySet();
+        }
+
+        @Override
+        public String toString() {
+            return map + " => {MalHashMap}";
+        }
     }
     static class MalInt implements MalType{
         int value;
@@ -145,6 +152,19 @@ public class Types {
         @Override
         public String toString() {
             return constant + " => {MalConstant}";
+        }
+    }
+
+    static class MalString implements MalType{
+        String value;
+
+        public MalString(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value + " => {MalString}";
         }
     }
 

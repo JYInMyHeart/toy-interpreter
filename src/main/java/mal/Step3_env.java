@@ -106,6 +106,12 @@ public class Step3_env {
             return vals;
         } else if (malType instanceof MalSymbol) {
             return  environment.get((MalSymbol) malType);
+        } else if(malType instanceof MalHashMap){
+            MalHashMap map = new MalHashMap();
+            for (Map.Entry<MalType,MalType> e:((MalHashMap)malType).entrySet()) {
+                map.put(e.getKey(),EVAL(e.getValue(),environment));
+            }
+            return map;
         } else {
             return malType;
         }
