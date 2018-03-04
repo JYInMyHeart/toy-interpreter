@@ -23,9 +23,7 @@ public class Types {
 
         public MalList(MalType... malTypes) {
             this.malTypeList = new ArrayList<>();
-            for (MalType mal:malTypes) {
-                malTypeList.add(mal);
-            }
+            malTypeList.addAll(Arrays.asList(malTypes));
         }
 
         public MalList(List<MalType> malTypeList) {
@@ -52,9 +50,7 @@ public class Types {
         }
         public MalVector(MalType... malTypes) {
             this.malTypeList = new ArrayList<>();
-            for (MalType mal:malTypes) {
-                malTypeList.add(mal);
-            }
+            malTypeList.addAll(Arrays.asList(malTypes));
         }
 
         @Override
