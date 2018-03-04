@@ -1,12 +1,10 @@
 package mal;
 
 
-import java.util.HashMap;
-
 import java.util.Map;
 import java.util.Scanner;
 
-import static mal.Core.*;
+import static mal.Core.ns;
 import static mal.Reader.readStr;
 import static mal.Types.*;
 
@@ -16,12 +14,12 @@ import static mal.Types.*;
 public class Step3_env {
 
 
-    static MalType READ(String exp) {
+    private static MalType READ(String exp) {
         return readStr(exp);
     }
 
-    static MalType EVAL(MalType exp, Env.Environment env) throws Exception {
-        MalType malType = null;
+    private static MalType EVAL(MalType exp, Env.Environment env) throws Exception {
+        MalType malType;
         if (exp instanceof MalList) {
             //List tempList = ((MalList) exp).malTypeList;
             MalList ast = (MalList) exp;
@@ -80,22 +78,22 @@ public class Step3_env {
             }
             return malType;
         } else if (exp == null) {
-            return exp;
+            return null;
         } else {
             return evalAst(exp, env);
         }
     }
 
-    static void PRINT(MalType exp) {
+    private static void PRINT(MalType exp) {
         Printer.prStr(exp);
     }
 
-    static void rep(String exp, Env.Environment env) throws Exception {
+    private static void rep(String exp, Env.Environment env) throws Exception {
         PRINT(EVAL(READ(exp), env));
 
     }
 
-    static MalType evalAst(MalType malType, Env.Environment environment) throws Exception {
+    private static MalType evalAst(MalType malType, Env.Environment environment) throws Exception {
         if (malType instanceof MalList) {
             MalList vals = ((MalList) malType).list_Q() ? new MalList() : new MalVector();
             MalList exprs = (MalList) malType;
@@ -105,11 +103,11 @@ public class Step3_env {
             }
             return vals;
         } else if (malType instanceof MalSymbol) {
-            return  environment.get((MalSymbol) malType);
-        } else if(malType instanceof MalHashMap){
+            return environment.get((MalSymbol) malType);
+        } else if (malType instanceof MalHashMap) {
             MalHashMap map = new MalHashMap();
-            for (Map.Entry<MalType,MalType> e:((MalHashMap)malType).entrySet()) {
-                map.put(e.getKey(),EVAL(e.getValue(),environment));
+            for (Map.Entry<MalType, MalType> e : ((MalHashMap) malType).entrySet()) {
+                map.put(e.getKey(), EVAL(e.getValue(), environment));
             }
             return map;
         } else {
@@ -117,8 +115,9 @@ public class Step3_env {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        Env.Environment root = new Env.Environment(null, Core.ns);
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) {
+        Env.Environment root = new Env.Environment(null, ns);
         while (true) {
             try {
                 System.out.print("user>");
@@ -131,7 +130,8 @@ public class Step3_env {
                     rep(exp, root);
                 }
             } catch (Exception e) {
-                System.out.println(e);
+                e.printStackTrace();
+                System.err.println(e);
             }
 
         }

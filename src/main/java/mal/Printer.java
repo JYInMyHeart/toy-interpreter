@@ -17,7 +17,7 @@ public class Printer {
 
 
 
-    public static void println(String msg){
+    static void println(String msg){
         System.out.println(msg);
     }
 }

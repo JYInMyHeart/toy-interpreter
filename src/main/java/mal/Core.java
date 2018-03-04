@@ -6,6 +6,7 @@ import mal.Types.*;
 
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class Core {
     public static Map ns = new HashMap();
     private static MalFunc add = a -> ((MalInt) a.nth(0)).add ((MalInt) a.nth(1));
@@ -48,6 +49,7 @@ public class Core {
         }
     };
     private static MalFunc list = a -> (MalList)a;
+
 
 
     static {

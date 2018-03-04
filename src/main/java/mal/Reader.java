@@ -1,6 +1,5 @@
 package mal;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -15,19 +14,19 @@ import static mal.Printer.println;
  * @author xck
  */
 public class Reader {
-    static int pos;
-    static List<String> tokens;
+    private static int pos;
+    private static List<String> tokens;
 
     public Reader() {
         tokens = new ArrayList<>();
         pos = 0;
     }
 
-    static String next() {
+    private static String next() {
         return tokens.get(pos++);
     }
 
-    static String peek() {
+    private static String peek() {
         if (pos >= tokens.size()) {
             return null;
         } else {
@@ -41,7 +40,7 @@ public class Reader {
         return readForm();
     }
 
-    static MalType readForm() {
+    private static MalType readForm() {
         String token = peek();
         if (token == null) throw new NullPointerException();
         char head = token.charAt(0);
@@ -66,12 +65,12 @@ public class Reader {
                 return new MalList(new MalSymbol("deref"),
                         readForm());
             case '(':
-                form = readList(new MalList(), '(', ')');
+                form = readList(new MalList(),'(', ')');
                 break;
             case ')':
                 System.out.print("unexpected ')'");
             case '[':
-                form = readVector(new MalVector(), '[', ']');
+                form = readList(new MalVector(), '[', ']');
                 break;
             case ']':
                 System.out.print("unexpected ']'");
@@ -81,8 +80,8 @@ public class Reader {
         return form;
     }
 
-    static MalType readList(MalList malList, char start, char end) {
-        MalList list = new MalList();
+    private static MalType readList(MalList malList, char start, char end) {
+        MalList list = malList.list_Q() ? new MalList() : new MalVector();
         String token = next();
         if (token.charAt(0) != start) {
             throw new NullPointerException("expected '" + start + "'");
@@ -95,21 +94,8 @@ public class Reader {
         return list;
     }
 
-    static MalType readVector(MalVector malList, char start, char end) {
-        MalVector list = new MalVector();
-        String token = next();
-        if (token.charAt(0) != start) {
-            throw new NullPointerException("expected '" + start + "'");
-        }
-        while ((token = peek()) != null && token.charAt(0) != end) {
-            list.malTypeList.add(readForm());
-        }
 
-        next();
-        return list;
-    }
-
-    static MalType readAtom() {
+    private static MalType readAtom() {
         String token = next();
         Pattern pattern = Pattern.compile("(^-?[0-9]+$)|(^-?[0-9][0-9.]*$)|(^nil$)|(^true$)|(^false$)|^\"(.*)\"$|:(.*)|(^[^\"]*$)");
         Matcher matcher = pattern.matcher(token);
@@ -138,7 +124,7 @@ public class Reader {
     /**
      * [\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"|;.*|[^\s\[\]{}('"`,;)]*)
      */
-    static List<String> tokenizer(String exp) {
+    private static List<String> tokenizer(String exp) {
         List<String> tokens = new ArrayList<>();
         Pattern pattern = Pattern.compile("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"(?:[\\\\].|[^\\\\\"])*\"|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");
         Matcher matcher = pattern.matcher(exp);
