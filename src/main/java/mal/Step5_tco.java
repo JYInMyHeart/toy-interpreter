@@ -15,7 +15,7 @@ import static mal.Types.*;
 /**
  * @author xck
  */
-public class Step3_env {
+public class Step5_tco {
 
 
     private static MalType READ(String exp) {
@@ -23,38 +23,45 @@ public class Step3_env {
     }
 
     private static MalType EVAL(MalType exp, Env.Environment env) throws Exception {
-        MalType malType;
-        if (exp instanceof MalList) {
-            //List tempList = ((MalList) exp).malTypeList;
+        MalType malType = null;
+        while (true) {
+            if (!(exp instanceof MalList)) {
+                return evalAst(exp, env);
+            }
             MalList ast = (MalList) exp;
             MalType symbol = ast.nth(0);
             String a0sym = symbol instanceof MalSymbol ? ((MalSymbol) symbol).value
                     : "__<*lambda*>__";
             switch (a0sym) {
                 case "do":
-                    MalType malDo = null;
-                    for (int i = 1; i < ast.size(); i++) {
-                        malDo = EVAL(ast.nth(i), env);
-                    }
-                    return malDo;
+                    evalAst(ast.slice(1, ast.size() - 1), env);
+                    exp = ast.nth(ast.size() - 1);
+                    break;
                 case "if":
                     MalType valEnable = ast.nth(1);
+                    MalType valTrue = ast.nth(2);
                     MalBoolean enable = (MalBoolean) EVAL(valEnable, env);
                     if (enable.value) {
-                        MalType valTrue = ast.nth(2);
-                        return EVAL(valTrue, env);
+                        exp = valTrue;
                     } else {
                         MalType valFalse = ast.nth(3);
                         if (valFalse == null) {
-                            return new MalConstant("nil");
+                            return new MalString("nil");
                         } else {
-                            return EVAL(valFalse, env);
+                            exp = valFalse;
                         }
                     }
+                    break;
                 case "lambda":
                     MalList valBinds = (MalList) ast.nth(1);
                     MalType valExprs = ast.nth(2);
-                    return (ILambda) a -> EVAL(valExprs, new Env.Environment(env, valBinds, a));
+                    Env.Environment curEnv = env;
+                    return new MalFunc(valExprs, curEnv, valBinds) {
+                        @Override
+                        public MalType apply(MalList a) throws Exception {
+                            return EVAL(valExprs, new Env.Environment(curEnv, valBinds, a));
+                        }
+                    };
                 case "def!":
                     MalSymbol variable = (MalSymbol) ast.nth(1);
                     MalType val = ast.nth(2);
@@ -74,17 +81,22 @@ public class Step3_env {
                         }
                         newEnv.set(envVariable1, envTempVal1);
                     }
-                    return EVAL(envTempVal, newEnv);
+                    exp = envTempVal;
+                    env = newEnv;
+                    break;
                 default:
                     MalList malFuncVal = (MalList) evalAst(ast, env);
-                    ILambda f = (ILambda) malFuncVal.nth(0);
-                    malType = f.apply(malFuncVal.slice(1));
+                    MalFunc f = (MalFunc) malFuncVal.nth(0);
+                    MalType fast = f.getAst();
+                    if (fast != null) {
+                        exp = fast;
+                        env = f.getEnv(malFuncVal.slice(1));
+                    } else {
+                        return f.apply(malFuncVal.slice(1));
+                    }
+
             }
-            return malType;
-        } else if (exp == null) {
-            return null;
-        } else {
-            return evalAst(exp, env);
+
         }
     }
 
@@ -121,10 +133,10 @@ public class Step3_env {
 
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
-        execuateFile();
+        command();
     }
 
-    private static void execuateFile(){
+    private static void execuateFile() {
         Env.Environment root = new Env.Environment(null, ns);
         String exp = readFile("D://development/sublime/workspace/racket/xck.rkt");
         try {
@@ -134,7 +146,7 @@ public class Step3_env {
         }
     }
 
-    private static void command(){
+    private static void command() {
         Env.Environment root = new Env.Environment(null, ns);
         while (true) {
             try {
@@ -155,13 +167,13 @@ public class Step3_env {
         }
     }
 
-    private static String readFile(String fileName){
+    private static String readFile(String fileName) {
         File file = new File(fileName);
         StringBuffer buffer = new StringBuffer();
-        try(InputStream in = new FileInputStream(file)){
+        try (InputStream in = new FileInputStream(file)) {
             int c;
-            while( ((c = in.read()) != -1)){
-                buffer.append((char)c);
+            while (((c = in.read()) != -1)) {
+                buffer.append((char) c);
             }
         } catch (IOException e) {
             e.printStackTrace();

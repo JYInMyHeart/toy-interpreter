@@ -34,10 +34,10 @@ public class Step2_eval {
 
     }
 
-    static MalFunc add = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value + ((Types.MalInt)a.malTypeList.get(1)).value);
-    static MalFunc mul = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value * ((Types.MalInt)a.malTypeList.get(1)).value);
-    static MalFunc div = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value / ((Types.MalInt)a.malTypeList.get(1)).value);
-    static MalFunc plus = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value - ((Types.MalInt)a.malTypeList.get(1)).value);
+    static ILambda add = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value + ((Types.MalInt)a.malTypeList.get(1)).value);
+    static ILambda mul = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value * ((Types.MalInt)a.malTypeList.get(1)).value);
+    static ILambda div = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value / ((Types.MalInt)a.malTypeList.get(1)).value);
+    static ILambda plus = a -> new Types.MalInt(((Types.MalInt)a.malTypeList.get(0)).value - ((Types.MalInt)a.malTypeList.get(1)).value);
 
     static MalType evalAst(MalType malType, Env.Environment environment) throws Exception {
         if(malType instanceof Types.MalList){
