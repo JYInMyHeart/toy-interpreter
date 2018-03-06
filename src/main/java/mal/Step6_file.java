@@ -16,8 +16,6 @@ import static mal.Types.*;
  * @author xck
  */
 public class Step6_file {
-
-
     private static MalType READ(String exp) {
         return readStr(exp);
     }
@@ -34,11 +32,11 @@ public class Step6_file {
                     : "__<*lambda*>__";
             switch (a0sym) {
                 case "eval":
-                    if(ast.nth(1) instanceof MalString){
-                        return EVAL(readStr(((MalString) ast.nth(1)).value),env);
-                    }else if(ast.nth(1) instanceof MalSymbol){
-                        return EVAL(env.get((MalSymbol) ast.nth(1)),env);
-                    }else {
+                    if (ast.nth(1) instanceof MalString) {
+                        return EVAL(readStr(((MalString) ast.nth(1)).value), env);
+                    } else if (ast.nth(1) instanceof MalSymbol) {
+                        return EVAL(env.get((MalSymbol) ast.nth(1)), env);
+                    } else {
                         throw new NullPointerException("error");
                     }
                 case "do":
