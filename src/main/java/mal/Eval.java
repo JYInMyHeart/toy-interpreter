@@ -15,9 +15,7 @@ import static mal.Types.*;
 /**
  * @author xck
  */
-public class Step5_tco {
-
-
+public class Eval {
     private static MalType READ(String exp) {
         return readStr(exp);
     }
@@ -27,11 +25,20 @@ public class Step5_tco {
             if (!(exp instanceof MalList)) {
                 return evalAst(exp, env);
             }
+
             MalList ast = (MalList) exp;
             MalType symbol = ast.nth(0);
             String a0sym = symbol instanceof MalSymbol ? ((MalSymbol) symbol).value
                     : "__<*lambda*>__";
             switch (a0sym) {
+                case "eval":
+                    if (ast.nth(1) instanceof MalString) {
+                        return EVAL(readStr(((MalString) ast.nth(1)).value), env);
+                    } else if (ast.nth(1) instanceof MalSymbol) {
+                        return EVAL(env.get((MalSymbol) ast.nth(1)), env);
+                    } else {
+                        throw new NullPointerException("error");
+                    }
                 case "do":
                     evalAst(ast.slice(1, ast.size() - 1), env);
                     exp = ast.nth(ast.size() - 1);
