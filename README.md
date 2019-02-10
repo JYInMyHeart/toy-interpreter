@@ -1,2 +1,2 @@
 # interpreter
-a simple similar scheme interpreter
+A simple similar scheme interpreter
